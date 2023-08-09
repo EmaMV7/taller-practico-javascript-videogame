@@ -13,14 +13,9 @@
     justify-content: center;
     padding: 20px 0;
 }
-.game-container > * {
-    padding: 20px 0;
-}
 
 #game{
-    width: 80%;
-    height: 80%;
-    background-color: rgb(255, 247, 135);
+    background-color: rgb(253, 231, 233);
     border-radius: 14px;
     border: 2px solid red;
     margin-top: 20px;
@@ -38,12 +33,15 @@
     background-color: yellow;
     border-color: red;
     border-radius: 12px;
-    margin: 10px;
+    margin-left: 25px;
+    margin-top: 20px;
+    margin-bottom:  10px;
+    font-weight: bold;
 }
 
 .messages{
     color: white;    
-    padding: 0 10px;
+    padding: 5px 10px;
     max-width: 460px;
     width: 100%;
     text-align: left;
