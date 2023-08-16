@@ -5,6 +5,11 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
+.dead{
+    background-color: black !important;
+    transition: all ease 0.3s;
+}
+
 .game-container{
     background-color: rgb(80, 0, 80);
     display: flex;
@@ -39,14 +44,38 @@
     font-weight: bold;
 }
 
-.messages{
+.btns > *:hover{
+    transition: all 0.2s;
+    background-color: rgb(255, 186, 186);
+}
+
+.data {
+    width: 80%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0 150px;
+    align-items: center;
+    justify-content: center;
+}
+
+.data > * {    
+    text-align: start; /* Alinear el contenido del div al centro */
+    padding-top: 10px;
     color: white;    
     padding: 5px 10px;
     max-width: 460px;
     width: 100%;
-    text-align: left;
+    margin: auto 0;
+    padding-top: 4px;
 }
 
+.data1 {
+    margin-left: 100px;
+}
+
+.data0 p {
+    margin: 5px 0;
+}
 
 @media (max-width: 440px) {
     button {margin-top:20px;}

@@ -6,6 +6,13 @@ const btnUp = document.querySelector('#up');
 const btnLeft = document.querySelector('#left');
 const btnRight = document.querySelector('#right');
 const btnDown = document.querySelector('#down');
+const record = document.querySelector('.record');
+const hearts = document.querySelector('.hearts');
+const timer = document.querySelector('.timer');
+const score = document.querySelector('.points');
+const background = document.querySelector('.game-container');
+const gameOver = document.querySelector('.dead');
+const rPoints = document.querySelector('.rPoints')
 
 // movements
 document.addEventListener('keyup', function(event) {
@@ -26,13 +33,43 @@ window.addEventListener('resize', adjustScreen);
 // start
 let canvasSize;
 let elemSize;
-let level = 1;
+let level = 0;
 let collisionBomb;
-let life = 1; 
+let heart = 3; 
+hearts.textContent = ['💗💗💗'];
 
-console.log('nivel: ' + level)
-console.log('vidas: ' + life)
+//records
+let bestRecord;
+let currentTime;
+let bestPoints = 0;
+let currentPoints= 0;
 
+// Cronometro - Timer
+let startTime;
+let isRunning = false;
+
+function formatTime(timeInSecond){
+    seconds = (timeInSecond % 60);
+    minutes = Math.floor((timeInSecond % 3600) / 60);
+    hours = Math.floor(timeInSecond / 3600);
+    
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+function updateTimer(){
+    const currentTime = Date.now();
+    const elapsedTime = Math.floor((currentTime - startTime) / 1000);
+    timer.textContent = formatTime(elapsedTime);
+
+    cTime = formatTime(elapsedTime);
+
+    // Is running true?
+    if (isRunning) {
+        requestAnimationFrame(updateTimer);
+    }
+}
+
+// Positions
 const playerPosition= {
     x : undefined,
     y : undefined
@@ -50,8 +87,15 @@ const doorPosition= {
     y : undefined
 }
 
+function startGame(){         
+    currentPoints = 0;
+    score.textContent = currentPoints;
+    cTime = '00:00:00'
+    timer.textContent = cTime;    
+}
 
-function startGame(){
+function drawGame(){
+    
     game.font = elemSize + 'px Arial'
     game.textAlign = "";
 
@@ -84,7 +128,7 @@ function startGame(){
             }else if (col == 'X'){
                 
                 bombPosition.x = PosX
-                bombPosition.y = PosY   
+                bombPosition.y = PosY
                     
                 Bombs = [PosX, PosY]
                 locateBombs.push(Bombs)       
@@ -97,24 +141,17 @@ function startGame(){
     movePlayer();
 }
 
-function movePlayer(){  
-
-    let reset = 0;
-
+function movePlayer(){   
     game.fillText(emojis['PLAYER'], playerPosition.x, playerPosition.y);
     
     locateBombs.forEach( e => {
         if(e[0] == playerPosition.x && e[1] == playerPosition.y){            
-            setTimeout(() => {                
-                console.log('explosion');
-                game.fillText(emojis['BOMB_COLLISION'], playerPosition.x, playerPosition.y);  
-                
-            dead();                           
+            setTimeout(() => {              
+                game.fillText(emojis['BOMB_COLLISION'], playerPosition.x, playerPosition.y);                
+                dead();
             },20);
-                
         }
     });
-
 
     const giftCollisionX = playerPosition.x == giftPosition.x
     const giftCollisionY = playerPosition.y == giftPosition.y;
@@ -122,14 +159,11 @@ function movePlayer(){
     
     if (gitfCollision){
         level ++;
+        currentPoints ++;
+        score.textContent = currentPoints;    
         reset = 1;
+        drawGame();
     } 
-    
-    //reset
-    if(reset == 1){
-        reset = 0
-        startGame()
-    }
 }
 
 function adjustScreen(){
@@ -145,57 +179,119 @@ function adjustScreen(){
     // elemSize = cada cuadradito del canvas
     elemSize = parseInt((canvasSize / 10) - 1);
 
-    startGame()
+    drawGame()
+}
+
+function runTimer(){    
+    background.classList.remove('dead')
+    if(heart == -1){
+        hearts.textContent = ['💗💗💗'];        
+        heart = 3;
+    }
+    // Is running false?
+    if(!isRunning){
+        isRunning = true;
+        startTime = Date.now() 
+        updateTimer();
+    }       
 }
 
 function moveUp(){
     if(Math.floor(playerPosition.y - elemSize) > elemSize - 1){
         playerPosition.y -= elemSize;
-        startGame();
+        drawGame();
     }
+    runTimer()
 }
 function moveLeft(){
     if(Math.floor(playerPosition.x - elemSize) > - 1){
         playerPosition.x -= elemSize;
-        startGame();
+        drawGame();
     }
-
-
+    runTimer()
 }
 function moveRight(){
     if(Math.floor(playerPosition.x - elemSize) < (elemSize * 8) - 1){
         playerPosition.x += elemSize;        
-        startGame();
+        drawGame();
     }
+    runTimer()
 }
 function moveDown(){
-
     if(Math.floor(playerPosition.y - elemSize) < (elemSize * 9) - 1){
         playerPosition.y += elemSize;
-        startGame();
+        drawGame();
+    }
+    runTimer()
+}    
+
+function CompareRecords(currentR, bestR){
+
+    cT = parseInt(currentR.replace(/:/g, ""))
+    bR = parseInt(bestR.replace(/:/g, ""))
+
+    if(cT <= bR && currentPoints >= bestPoints){// SI hace record
+        bestPoints = currentPoints
+        rPoints.textContent = bestPoints;
+        bestRecord = cTime
+        record.textContent = bestRecord;
     }
 }
 
 function dead(){
-    life -= 1    
+    heart -= 1
 
-    console.log('nivel: ' + level)
-    console.log('vidas: ' + life)
-    if(life == 0){
-        //  gameOver()
-        life = 3;
+    // PERDIO
+    if(heart == 0){
         level = 0;
-    }else{  
-        setTimeout(() => {
 
-            playerPosition.x = doorPosition.x
-            playerPosition.y = doorPosition.y
-            
-            startGame()
-            console.log('muerto');
-            
-        }, 250)
+        isRunning = false;
+
+        if(!bestRecord){
+            bestRecord = cTime
+        }
+        CompareRecords(cTime, bestRecord)
+    
+
+        setTimeout(() => {            
+            game.clearRect(0,0,canvasSize,canvasSize)
+            drawGame()
+            playerPosition.x = doorPosition.x;
+            playerPosition.y = doorPosition.y;
+            timer.textContent= '00:00:00'
+        }, 250);
+        
+        background.classList.add('dead');
+        startGame()
+
+        //AUN NO PERDIO
+    }else{          
+        playerPosition.x = doorPosition.x;
+        playerPosition.y = doorPosition.y;
+
+        let lifes = hearts.textContent;
+        lifes = lifes.substring(0, lifes.length - 2);
+        hearts.textContent = lifes;
+
+        setTimeout(() => {            
+            drawGame();                     
+        }, 200)
+
     }
+    
 }
 
+/*
+Cosas para arreglar:
+    cuando paso de nivel pierdo una vida
+    la cabera no aparece en la primer puerta cuando muere
+ 
+ 
+Cosas para añadir: 
+    escena de game over
+    escena de win
 
+Modificaciones:
+    cambiar emojis para dar otro toque.
+
+*/
