@@ -11,8 +11,11 @@ const hearts = document.querySelector('.hearts');
 const timer = document.querySelector('.timer');
 const score = document.querySelector('.points');
 const background = document.querySelector('.game-container');
-const gameOver = document.querySelector('.dead');
-const rPoints = document.querySelector('.rPoints')
+const rPoints = document.querySelector('.rPoints');
+const win = document.querySelector('.win');
+const gameOver = document.querySelector('.gameOver');
+const tryAgainMS = document.querySelector('.tryAgain')
+  
 
 // movements
 document.addEventListener('keyup', function(event) {
@@ -37,6 +40,9 @@ let level = 0;
 let collisionBomb;
 let heart = 3; 
 hearts.textContent = ['💗💗💗'];
+let tryAgain= false;
+let victory = 0;
+
 
 //records
 let bestRecord;
@@ -87,25 +93,18 @@ const doorPosition= {
     y : undefined
 }
 
-function startGame(){         
-    currentPoints = 0;
-    score.textContent = currentPoints;
-    cTime = '00:00:00'
-    timer.textContent = cTime;    
-}
 
 function drawGame(){
-    
-    game.font = elemSize + 'px Arial'
+    game.font = elemSize + 'px Arial';
     game.textAlign = "";
 
-    map = maps[level]
-    locateBombs = []
+    map = maps[level];
+    locateBombs = [];
 
-    mapRow = map.trim().split('\n')
-    mapRowCols = mapRow.map(element => element.trim().split(''))
+    mapRow = map.trim().split('\n');
+    mapRowCols = mapRow.map(element => element.trim().split(''));
 
-    game.clearRect(0,0,canvasSize,canvasSize)
+    game.clearRect(0,0,canvasSize,canvasSize);
 
     mapRowCols.forEach((row, rowI) => {
         row.forEach((col, colI) => {
@@ -113,7 +112,7 @@ function drawGame(){
             PosX = parseInt(elemSize * (colI))
             PosY = parseInt(elemSize * (rowI + 1))
             
-            // player spawn
+            // Spawns
             if(col == 'O'){
                 doorPosition.x = PosX
                 doorPosition.y = PosY
@@ -137,42 +136,56 @@ function drawGame(){
             game.fillText(emoji, PosX, PosY)
         })
     });
-
     movePlayer();
 }
 
 function movePlayer(){   
     game.fillText(emojis['PLAYER'], playerPosition.x, playerPosition.y);
-    
-    locateBombs.forEach( e => {
-        if(e[0] == playerPosition.x && e[1] == playerPosition.y){            
-            setTimeout(() => {              
-                game.fillText(emojis['BOMB_COLLISION'], playerPosition.x, playerPosition.y);                
-                dead();
-            },20);
-        }
-    });
 
-    const giftCollisionX = playerPosition.x == giftPosition.x
+    // Next level
+    const giftCollisionX = playerPosition.x == giftPosition.x;
     const giftCollisionY = playerPosition.y == giftPosition.y;
-    const gitfCollision = giftCollisionX && giftCollisionY;    
-    
+    const gitfCollision = giftCollisionX && giftCollisionY;
+
     if (gitfCollision){
+        currentPoints ++
+        score.textContent = currentPoints;
+        console.log(currentPoints)
+
         level ++;
-        currentPoints ++;
-        score.textContent = currentPoints;    
-        reset = 1;
-        drawGame();
-    } 
+
+        playerPosition.x = undefined;
+        playerPosition.y = undefined;        
+        
+        // Win
+        
+        if(currentPoints == 6){
+            console.log('ganaste')
+            setTimeout(()=> {
+                goal()
+            }, 20)
+        }else{
+            drawGame();
+        }        
+    }
+
+    // Dead
+    locateBombs.forEach( e => {
+    if(e[0] == playerPosition.x && e[1] == playerPosition.y){
+        setTimeout(() => {              
+            game.fillText(emojis['BOMB_COLLISION'], playerPosition.x, playerPosition.y);     
+            dead();
+        },20);
+    }});
 }
 
 function adjustScreen(){
-
     if (window.innerHeight > window.innerWidth){
         canvasSize = window.innerWidth * 0.7;
     }else{
         canvasSize = window.innerHeight * 0.7;
     }
+    
     canvas.setAttribute('width', canvasSize)
     canvas.setAttribute('height', canvasSize)
 
@@ -182,90 +195,182 @@ function adjustScreen(){
     drawGame()
 }
 
-function runTimer(){    
-    background.classList.remove('dead')
-    if(heart == -1){
-        hearts.textContent = ['💗💗💗'];        
-        heart = 3;
-    }
+function runTimer(){
     // Is running false?
     if(!isRunning){
         isRunning = true;
-        startTime = Date.now() 
+        startTime = Date.now();
         updateTimer();
-    }       
+    }
 }
 
 function moveUp(){
+    
+    gameOver.classList.add('hidden');
+    background.classList.remove('background1');
+    win.classList.add('hidden');
+    background.classList.remove('background2');
+    tryAgainMS.classList.add('hidden');    
+    background.classList.remove('background3');
+
     if(Math.floor(playerPosition.y - elemSize) > elemSize - 1){
         playerPosition.y -= elemSize;
         drawGame();
+        if(tryAgain == true){
+            reset();
+            drawGame();
+        }
     }
+    
     runTimer()
 }
+
 function moveLeft(){
+    
+    gameOver.classList.add('hidden');
+    background.classList.remove('background1');
+    win.classList.add('hidden');
+    background.classList.remove('background2');
+    tryAgainMS.classList.add('hidden');    
+    background.classList.remove('background3');
+
     if(Math.floor(playerPosition.x - elemSize) > - 1){
+        
         playerPosition.x -= elemSize;
         drawGame();
+        if(tryAgain == true){
+            reset();
+            drawGame();
+        }
+        
     }
     runTimer()
 }
+
 function moveRight(){
+    
+    gameOver.classList.add('hidden');
+    background.classList.remove('background1');
+    win.classList.add('hidden');
+    background.classList.remove('background2');
+    tryAgainMS.classList.add('hidden');    
+    background.classList.remove('background3');
+
     if(Math.floor(playerPosition.x - elemSize) < (elemSize * 8) - 1){
-        playerPosition.x += elemSize;        
+        playerPosition.x += elemSize;
+        drawGame();
+    }
+    if(tryAgain == true){
+        reset();
         drawGame();
     }
     runTimer()
 }
+
 function moveDown(){
+    
+    gameOver.classList.add('hidden');
+    background.classList.remove('background1');
+    win.classList.add('hidden');
+    background.classList.remove('background2');
+    tryAgainMS.classList.add('hidden');    
+    background.classList.remove('background3');
+
     if(Math.floor(playerPosition.y - elemSize) < (elemSize * 9) - 1){
         playerPosition.y += elemSize;
         drawGame();
     }
+
+    if(tryAgain == true){
+        reset();
+        drawGame();
+    }
+    gameOver.classList.add('hidden');
+    background.classList.remove('background1');
+    win.classList.add('hidden');
+    background.classList.remove('background2');
     runTimer()
 }    
 
 function CompareRecords(currentR, bestR){
-
-    cT = parseInt(currentR.replace(/:/g, ""))
-    bR = parseInt(bestR.replace(/:/g, ""))
-
-    if(cT <= bR && currentPoints >= bestPoints){// SI hace record
-        bestPoints = currentPoints
-        rPoints.textContent = bestPoints;
-        bestRecord = cTime
-        record.textContent = bestRecord;
+    if(!bestR){
+        bestR = cTime;
     }
+
+    isRunning = false;
+
+    cT = parseInt(currentR.replace(/:/g, ""));
+    bR = parseInt(bestR.replace(/:/g, ""));
+
+    if(cT <= bR && currentPoints >= bestPoints){ // SI hace record
+        bestPoints = currentPoints;
+        rPoints.textContent = bestPoints;
+        bestRecord = cTime;
+        record.textContent = bestRecord;
+        victory = 1;
+    }else{
+        console.log('no hace record')
+        victory= 0;
+    }
+
+}
+
+function goal(){ 
+
+    CompareRecords(cTime, bestRecord);
+    // NEW RECORD
+    if(victory == 1){
+        setTimeout(() => {         
+            level = 0 
+            playerPosition.x = undefined
+            playerPosition.y = undefined
+            drawGame()
+            playerPosition.x = doorPosition.x;
+            playerPosition.y = doorPosition.y;
+        }, 250);    
+    
+        win.classList.remove('hidden');
+        background.classList.add('background2');
+    }else{
+
+        setTimeout(() => {         
+            level = 0 
+            playerPosition.x = undefined
+            playerPosition.y = undefined
+            drawGame()
+            playerPosition.x = doorPosition.x;
+            playerPosition.y = doorPosition.y;
+        }, 250);
+
+        tryAgainMS.classList.remove('hidden');    
+        background.classList.add('background3');
+    }
+    tryAgain = true;
 }
 
 function dead(){
     heart -= 1
 
-    // PERDIO
-    if(heart == 0){
-        level = 0;
+    if(heart == 0){ // PERDIO
 
-        isRunning = false;
-
-        if(!bestRecord){
-            bestRecord = cTime
-        }
         CompareRecords(cTime, bestRecord)
-    
 
-        setTimeout(() => {            
-            game.clearRect(0,0,canvasSize,canvasSize)
+        setTimeout(() => {         
+            level = 0 
+            playerPosition.x = undefined
+            playerPosition.y = undefined
             drawGame()
             playerPosition.x = doorPosition.x;
             playerPosition.y = doorPosition.y;
-            timer.textContent= '00:00:00'
         }, 250);
-        
-        background.classList.add('dead');
-        startGame()
 
-        //AUN NO PERDIO
-    }else{          
+        hearts.textContent = [''];
+        gameOver.classList.remove('hidden');
+        background.classList.add('background1');
+        
+        tryAgain = true;
+        
+    }else{ //AUN NO PERDIO
         playerPosition.x = doorPosition.x;
         playerPosition.y = doorPosition.y;
 
@@ -273,23 +378,37 @@ function dead(){
         lifes = lifes.substring(0, lifes.length - 2);
         hearts.textContent = lifes;
 
-        setTimeout(() => {            
-            drawGame();                     
+        setTimeout(() => {
+            drawGame();
         }, 200)
+    }    
+}
 
+
+// Reset
+function reset(){
+
+    console.log('estoy en reset');
+    level = 0;
+    currentPoints = 0;
+    tryAgain = false;
+    score.textContent = 0;
+    victory = 0
+
+    if(heart >= 0){
+        hearts.textContent = ['💗💗💗'];
+        heart = 3;
     }
+
     
 }
 
 /*
-Cosas para arreglar:
-    cuando paso de nivel pierdo una vida
-    la cabera no aparece en la primer puerta cuando muere
- 
- 
-Cosas para añadir: 
-    escena de game over
-    escena de win
+Problemas:
+la partida no reinicia cuando gano el juego
+
+Arreglar:
+aviso try again si no supero el record
 
 Modificaciones:
     cambiar emojis para dar otro toque.

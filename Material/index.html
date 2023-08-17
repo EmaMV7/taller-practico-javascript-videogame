@@ -7,8 +7,10 @@
     <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-    <div class="signDied"></div>
     <div class="game-container">
+        <div class="gameOver hidden">💀 DIED 💀</div>
+        <div class="win hidden">👑 WIN 👑</div>
+        <div class="tryAgain hidden">TRY AGAIN</div>
         <canvas id="game"></canvas>
 
         <div class="btns">
@@ -17,14 +19,14 @@
             <button id="right">Derecha</button>
             <button id="down">Abajo</button>
         </div>
-
+        
         <div class="data">
             <div class="data0">
             <p>Vidas: <span class="hearts">💗💗💗</span></p>
             <p>Points: <span class="points"> 0</span></p>
             <p>Tiempo: <span class="timer">00:00:00</span></p>
             </div>
-            <div class="data0">   
+            <div class="data0">
                 <p>--- Record ---</p>
                 <p>Points: <span class="rPoints"> 0</span>   ⭐</p>
                 <p>Record: <span class="record"> 00:00:00</span>  ⭐</p>
