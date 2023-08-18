@@ -5,6 +5,11 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
+.hidden{
+    opacity: 0;
+    visibility: hidden;
+}
+
 .background1{
     background-color: black !important;
     transition: all ease 0.3s;
@@ -19,9 +24,9 @@
     transition: all ease 0.3s;
 }
 
-.game-container{
-    
-    background-color: rgb(80, 0, 80);
+/* LIENZO */
+.game-container{    
+    background-color: rgb(30, 35, 58);
     display: flex;
     flex-direction:  column;
     align-items: center;
@@ -31,12 +36,13 @@
 }
 
 #game{
-    background-color: rgb(253, 231, 233);
+    background-color: rgb(58, 58, 102);
     border-radius: 14px;
-    border: 2px solid red;
+    border: 2px solid rgba(17, 175, 51, 0.438);
     margin-top: 20px;
 }
 
+/* BUTONES */
 .btns{
     display: flex;
     justify-content: center;
@@ -47,7 +53,7 @@
 .btns > *{
     padding: 10px 25px;
     background-color: yellow;
-    border-color: red;
+    border-color: rgb(19, 124, 41);
     border-radius: 12px;
     margin-left: 25px;
     margin-top: 20px;
@@ -60,7 +66,8 @@
     background-color: rgb(255, 186, 186);
 }
 
-.data {
+/* INFORMACION */
+.data{
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 100px;
@@ -68,7 +75,7 @@
     justify-content: center;
 }
 
-.data > * {    
+.data > *{    
     text-align: start; /* Alinear el contenido del div al centro */
     padding-top: 10px;
     color: white;    
@@ -79,14 +86,15 @@
     padding-top: 4px;
 }
 
-.data1 {
+.data1{
     margin-left: 100px;
 }
 
-.data0 p {
+.data0 p{
     margin: 5px 0;
 }
 
+/* ESTADOS */
 .gameOver{
     transition: all 0.3s;
     width: 100%;
@@ -137,10 +145,7 @@
     justify-content: center;
     align-items: center;
 }
-.hidden{
-    opacity: 0;
-    visibility: hidden;
-}
+
 
 @media (max-width: 440px) {
     button {margin-top:20px;}

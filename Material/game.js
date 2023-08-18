@@ -18,7 +18,7 @@ const tryAgainMS = document.querySelector('.tryAgain')
   
 
 // movements
-document.addEventListener('keyup', function(event) {
+document.addEventListener('keydown', function(event) {
     if(event.key == 'ArrowUp' || event.key == 'KeyW') moveUp();
     else if (event.key == 'ArrowLeft' || event.key == 'KeyA') moveLeft();
     else if (event.key == 'ArrowRight' || event.key == 'KeyD') moveRight();
@@ -36,12 +36,12 @@ window.addEventListener('resize', adjustScreen);
 // start
 let canvasSize;
 let elemSize;
-let level = 0;
 let collisionBomb;
-let heart = 3; 
-hearts.textContent = ['💗💗💗'];
-let tryAgain= false;
 let victory = 0;
+let level = 0;
+let heart = 3; 
+let tryAgain= false;
+hearts.textContent = ['💗💗💗'];
 
 
 //records
@@ -72,6 +72,15 @@ function updateTimer(){
     // Is running true?
     if (isRunning) {
         requestAnimationFrame(updateTimer);
+    }
+}
+
+function runTimer(){
+    // Is running false?
+    if(!isRunning){
+        isRunning = true;
+        startTime = Date.now();
+        updateTimer();
     }
 }
 
@@ -131,8 +140,7 @@ function drawGame(){
                     
                 Bombs = [PosX, PosY]
                 locateBombs.push(Bombs)       
-            }
-          
+            }          
             game.fillText(emoji, PosX, PosY)
         })
     });
@@ -157,8 +165,7 @@ function movePlayer(){
         playerPosition.x = undefined;
         playerPosition.y = undefined;        
         
-        // Win
-        
+        // Win        
         if(currentPoints == 6){
             console.log('ganaste')
             setTimeout(()=> {
@@ -172,11 +179,20 @@ function movePlayer(){
     // Dead
     locateBombs.forEach( e => {
     if(e[0] == playerPosition.x && e[1] == playerPosition.y){
-        setTimeout(() => {              
-            game.fillText(emojis['BOMB_COLLISION'], playerPosition.x, playerPosition.y);     
+        setTimeout(() => {
+            game.fillText(emojis['BOMB_COLLISION'],playerPosition.x,playerPosition.y);
             dead();
         },20);
     }});
+}
+
+function cleanLevel(){
+    gameOver.classList.add('hidden');
+    background.classList.remove('background1');
+    win.classList.add('hidden');
+    background.classList.remove('background2');
+    tryAgainMS.classList.add('hidden');    
+    background.classList.remove('background3');
 }
 
 function adjustScreen(){
@@ -195,23 +211,9 @@ function adjustScreen(){
     drawGame()
 }
 
-function runTimer(){
-    // Is running false?
-    if(!isRunning){
-        isRunning = true;
-        startTime = Date.now();
-        updateTimer();
-    }
-}
-
 function moveUp(){
-    
-    gameOver.classList.add('hidden');
-    background.classList.remove('background1');
-    win.classList.add('hidden');
-    background.classList.remove('background2');
-    tryAgainMS.classList.add('hidden');    
-    background.classList.remove('background3');
+
+    cleanLevel()
 
     if(Math.floor(playerPosition.y - elemSize) > elemSize - 1){
         playerPosition.y -= elemSize;
@@ -227,12 +229,7 @@ function moveUp(){
 
 function moveLeft(){
     
-    gameOver.classList.add('hidden');
-    background.classList.remove('background1');
-    win.classList.add('hidden');
-    background.classList.remove('background2');
-    tryAgainMS.classList.add('hidden');    
-    background.classList.remove('background3');
+    cleanLevel()
 
     if(Math.floor(playerPosition.x - elemSize) > - 1){
         
@@ -249,12 +246,7 @@ function moveLeft(){
 
 function moveRight(){
     
-    gameOver.classList.add('hidden');
-    background.classList.remove('background1');
-    win.classList.add('hidden');
-    background.classList.remove('background2');
-    tryAgainMS.classList.add('hidden');    
-    background.classList.remove('background3');
+    cleanLevel()
 
     if(Math.floor(playerPosition.x - elemSize) < (elemSize * 8) - 1){
         playerPosition.x += elemSize;
@@ -269,12 +261,7 @@ function moveRight(){
 
 function moveDown(){
     
-    gameOver.classList.add('hidden');
-    background.classList.remove('background1');
-    win.classList.add('hidden');
-    background.classList.remove('background2');
-    tryAgainMS.classList.add('hidden');    
-    background.classList.remove('background3');
+    cleanLevel()
 
     if(Math.floor(playerPosition.y - elemSize) < (elemSize * 9) - 1){
         playerPosition.y += elemSize;
@@ -384,7 +371,6 @@ function dead(){
     }    
 }
 
-
 // Reset
 function reset(){
 
@@ -398,12 +384,12 @@ function reset(){
     if(heart >= 0){
         hearts.textContent = ['💗💗💗'];
         heart = 3;
-    }
-
-    
+    }else if(heart < 0 ){        
+        hearts.textContent = ['💗💗💗'];
+        heart = 3;
+    }    
 }
 
-/*
 Problemas:
 la partida no reinicia cuando gano el juego
 
